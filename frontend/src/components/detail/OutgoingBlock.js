@@ -18,6 +18,7 @@ export default function OutgoingBlock({ document, onUpdate }) {
         outgoing_date: outgoingDate,
         sent_to: sentTo,
       });
+      console.log('SEND RESPONSE:', data);
       onUpdate(data);
     } catch (err) {
       console.error(err);
@@ -30,9 +31,6 @@ export default function OutgoingBlock({ document, onUpdate }) {
     <div className="mb-6">
       <div className="flex justify-between items-start mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Отправка документа</h2>
-        <span className="px-4 py-2 bg-teal-100 border border-teal-200 rounded-lg text-teal-600 text-sm">
-          Подписан
-        </span>
       </div>
 
       <div className="grid grid-cols-2 gap-6 mb-6">

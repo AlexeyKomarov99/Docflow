@@ -192,21 +192,23 @@ async function sendDocument(req, res) {
     });
 
     const io = getIO();
-    io.to('chief').emit('document_sent', {
+    io.to('chief').to('secretary').emit('document_sent', {
       id: document.id,
       status: document.status,
-      outgoing_number: document.outgoingNumber,
-      outgoing_date: document.outgoingDate,
-      sent_to: document.sentTo
+      outgoingNumber: document.outgoingNumber,
+      outgoingDate: document.outgoingDate,
+      sentTo: document.sentTo,
+      sentAt: document.sentAt,
     });
 
     if (document.assignedTo) {
       io.to(`employee_${document.assignedTo}`).emit('document_sent', {
         id: document.id,
         status: document.status,
-        outgoing_number: document.outgoingNumber,
-        outgoing_date: document.outgoingDate,
-        sent_to: document.sentTo
+        outgoingNumber: document.outgoingNumber,
+        outgoingDate: document.outgoingDate,
+        sentTo: document.sentTo,
+        sentAt: document.sentAt,
       });
     }
 
