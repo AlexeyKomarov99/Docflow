@@ -110,7 +110,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          {/* <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
               У вас нет аккаунта?{' '}
               <button
@@ -120,7 +120,7 @@ export default function LoginPage() {
                 Зарегистрируйтесь
               </button>
             </p>
-          </div>
+          </div> */}
 
           {/* Блок с демо-доступами (оставлен для удобства) */}
           <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
