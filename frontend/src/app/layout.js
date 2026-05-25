@@ -1,49 +1,36 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import useAuthStore from '../store/authStore';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import './globals.css';
 
+const AUTH_PAGES = ['/login', '/forgot-password', '/reset-password'];
+
 export default function RootLayout({ children }) {
-  const { checkAuth, isAuth, user } = useAuthStore();
+  const { checkAuth, isAuth } = useAuthStore();
   const pathname = usePathname();
   const router = useRouter();
+  const [ready, setReady] = useState(false);
+
+  const isAuthPage = AUTH_PAGES.includes(pathname);
 
   useEffect(() => {
-    checkAuth();
+    checkAuth().finally(() => setReady(true));
   }, []);
 
   useEffect(() => {
-    if (isAuth === false) {
-      const isAuthPage = pathname === '/login' || 
-                         pathname === '/forgot-password' || 
-                         pathname === '/reset-password';
-      if (!isAuthPage) {
-        router.push('/login');
-      }
+    if (ready && !isAuth && !isAuthPage) {
+      router.push('/login');
     }
-  }, [isAuth, pathname]);
+  }, [ready, isAuth, isAuthPage]);
 
-  const isAuthPage = pathname === '/login' || 
-                     pathname === '/forgot-password' || 
-                     pathname === '/reset-password';
-
-  if (isAuthPage) {
+  if (isAuthPage || !ready) {
     return (
       <html lang="ru">
         <body>{children}</body>
-      </html>
-    );
-  }
-
-  // Ждем пока checkAuth завершится
-  if (!user) {
-    return (
-      <html lang="ru">
-        <body><div className="p-6">Загрузка...</div></body>
       </html>
     );
   }

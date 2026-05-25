@@ -38,7 +38,6 @@ async function login(req, res) {
         middleName: user.middleName,
         role: user.role,
         position: user.position,
-        gender: user.gender
       },
     });
   } catch (error) {
@@ -59,7 +58,6 @@ async function me(req, res) {
         middleName: true,
         role: true,
         position: true,
-        gender: true
       },
     });
 
