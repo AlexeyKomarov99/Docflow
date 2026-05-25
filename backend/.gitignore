@@ -32,3 +32,4 @@ prisma/*.db-journal
 # Временные файлы
 tmp/
 temp/
+/generated/prisma

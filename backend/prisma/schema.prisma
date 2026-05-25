@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(255)
+  password  String   @map("password_hash") @db.VarChar(255)
+  firstName String   @map("first_name") @db.VarChar(100)
+  lastName  String   @map("last_name") @db.VarChar(100)
+  middleName String? @map("middle_name") @db.VarChar(100)
+  role      String   @db.VarChar(20)
+  position  String?  @db.VarChar(255)
+  resetToken      String?  @map("reset_token") @db.VarChar(255)
+  resetTokenExp   DateTime? @map("reset_token_exp")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  createdDocuments   Document[] @relation("CreatedBy")
+  assignedDocuments  Document[] @relation("AssignedTo")
+  signedDocuments    Document[] @relation("SignedBy")
+
+  @@map("users")
+}
+
+model Document {
+  id                  Int      @id @default(autoincrement())
+  type                String   @db.VarChar(20)
+  status              String   @db.VarChar(30)  @default("pending_registration")
+  senderOrg           String?  @map("sender_org") @db.VarChar(255)
+  title               String   @db.Text
+  subscriptionNumber  String?  @map("subscription_number") @db.VarChar(50)
+  subscriptionDate    DateTime? @map("subscription_date")
+  senderName          String?  @map("sender_name") @db.VarChar(255)
+  deadline            DateTime?
+  receivedDate        DateTime? @map("document_received_date")
+  content             String   @db.Text
+  attachmentsCount    Int      @default(0) @map("attachments_count")
+  pagesCount          Int      @default(0) @map("pages_count")
+  
+  // Секретарь
+  registrationNumber  String?  @map("registration_number") @db.VarChar(50)
+  registrationDate    DateTime? @map("registration_date")
+  
+  // Руководитель
+  resolutionText      String?  @map("resolution_text") @db.Text
+  assignedTo          Int?     @map("assigned_to")
+  
+  // Исполнитель
+  executionResult     String?  @map("execution_result") @db.Text
+  executedAt          DateTime? @map("executed_at")
+  
+  // Руководитель (подписание)
+  signedBy            Int?     @map("signed_by")
+  signedAt            DateTime? @map("signed_at")
+  
+  // Секретарь (отправка)
+  outgoingNumber      String?  @map("outgoing_number") @db.VarChar(50)
+  outgoingDate        DateTime? @map("outgoing_date")
+  sentTo              String?  @map("sent_to") @db.VarChar(255)
+  sentAt              DateTime? @map("sent_at")
+  
+  // Служебные
+  createdBy           Int?     @map("created_by")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  creator   User? @relation("CreatedBy", fields: [createdBy], references: [id])
+  assignee  User? @relation("AssignedTo", fields: [assignedTo], references: [id])
+  signer    User? @relation("SignedBy", fields: [signedBy], references: [id])
+
+  files File[]
+
+  @@map("documents")
+}
+
+model File {
+  id           Int      @id @default(autoincrement())
+  documentId   Int      @map("document_id")
+  type         String   @db.VarChar(30)
+  originalName String   @map("original_name") @db.VarChar(255)
+  filePath     String   @map("file_path") @db.VarChar(500)
+  sizeBytes    Int?     @map("size_bytes")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@map("files")
+}
